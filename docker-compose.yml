@@ -1,0 +1,32 @@
+services:
+  product-service:
+    image: 260526/product-service:v4
+    ports: 
+      - "8088:8087"
+    restart: always
+    networks: 
+      - db_network
+    depends_on: 
+      - "mysqldb-container"
+
+  mysqldb-container:
+    image: mysql
+    ports: 
+      - "3306:3306"
+    volumes:
+      - ./scripts/product.sql:/docker-entrypoint-initdb.d/product.sql
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: spring_boot
+      MYSQL_USER: spring_user
+      MYSQL_PASSWORD: secret_pw
+    networks: 
+      - db_network
+volumes:
+  db_data: {}
+
+networks: 
+  db_network: 
+    external: true
