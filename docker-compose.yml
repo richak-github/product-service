@@ -1,0 +1,32 @@
+services:
+  order-container:
+    image: 260526/order-service:v2
+    ports: 
+      - "9090:9088"
+    restart: always
+    networks: 
+      - my-network
+    depends_on: 
+      - "mysqldb"
+
+  mysqldb:
+    image: mysql
+    ports: 
+      - "3308:3306"
+    volumes:
+      - ./script/orders.sql:/docker-entrypoint-initdb.d/orders.sql
+      - db_data_order:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: order_db
+      MYSQL_USER: order_user
+      MYSQL_PASSWORD: order
+    networks: 
+      - my-network
+volumes:
+  db_data_order: {}
+
+networks: 
+  my-network: 
+    external: true
